@@ -1,0 +1,123 @@
+[
+    {
+        "name": "Nissa, Worldsoul Speaker",
+        "type": "Legendary Creature \u2014 Elf Druid",
+        "set": "Aetherdrift Commander",
+        "power": "3",
+        "toughness": "3",
+        "oracle_text": "Landfall \u2014 Whenever a land you control enters, you get {E}{E} (two energy counters).\nYou may pay eight {E} rather than pay the mana cost for permanent spells you cast.",
+        "mana_cost": "{3}{G}"
+    },
+    {
+        "name": "Static Orb",
+        "type": "Artifact",
+        "set": "Seventh Edition",
+        "oracle_text": "As long as this artifact is untapped, players can't untap more than two permanents during their untap steps.",
+        "mana_cost": "{3}"
+    },
+    {
+        "name": "Sensory Deprivation",
+        "type": "Enchantment \u2014 Aura",
+        "set": "Magic 2014",
+        "oracle_text": "Enchant creature\nEnchanted creature gets -3/-0.",
+        "mana_cost": "{U}"
+    },
+    {
+        "name": "Road of Return",
+        "type": "Sorcery",
+        "set": "Commander 2019",
+        "oracle_text": "Choose one \u2014\n\u2022 Return target permanent card from your graveyard to your hand.\n\u2022 Put your commander into your hand from the command zone.\nEntwine {2} (Choose both if you pay the entwine cost.)",
+        "mana_cost": "{G}{G}"
+    },
+    {
+        "name": "Storm Crow",
+        "type": "Creature \u2014 Bird",
+        "set": "Ninth Edition",
+        "power": "1",
+        "toughness": "2",
+        "oracle_text": "Flying (This creature can't be blocked except by creatures with flying or reach.)",
+        "mana_cost": "{1}{U}"
+    },
+    {
+        "name": "Snarlfang Vermin",
+        "type": "Creature \u2014 Rat",
+        "set": "Alchemy: Murders at Karlov Manor ",
+        "power": "2",
+        "toughness": "1",
+        "oracle_text": "Whenever Snarlfang Vermin deals combat damage to a creature, if that creature is still on the battlefield, suspect that creature. It perpetually gains this ability.\nWhenever a suspected creature an opponent controls dies while Snarlfang Vermin is in your graveyard, that opponent loses 1 life.",
+        "mana_cost": "{B}"
+    },
+    {
+        "name": "Walking Sponge",
+        "type": "Creature \u2014 Sponge",
+        "set": "Urza's Legacy",
+        "power": "1",
+        "toughness": "1",
+        "oracle_text": "{T}: Target creature loses your choice of flying, first strike, or trample until end of turn.",
+        "mana_cost": "{1}{U}"
+    },
+    {
+        "name": "Ravnica at War",
+        "type": "Sorcery",
+        "set": "War of the Spark",
+        "oracle_text": "Exile all multicolored permanents.",
+        "mana_cost": "{3}{W}"
+    },
+    {
+        "name": "Greta, Sweettooth Scourge",
+        "type": "Legendary Creature \u2014 Human Warrior",
+        "set": "Wilds of Eldraine",
+        "power": "3",
+        "toughness": "3",
+        "oracle_text": "When Greta enters, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")\n{G}, Sacrifice a Food: Put a +1/+1 counter on target creature. Activate only as a sorcery.\n{1}{B}, Sacrifice a Food: You draw a card and you lose 1 life.",
+        "mana_cost": "{1}{B}{G}"
+    },
+    {
+        "name": "Torrent of Fire",
+        "type": "Sorcery",
+        "set": "Scourge",
+        "oracle_text": "Torrent of Fire deals damage to any target equal to the highest mana value among permanents you control.",
+        "mana_cost": "{3}{R}{R}"
+    },
+    {
+        "name": "Wyluli Wolf",
+        "type": "Creature \u2014 Wolf",
+        "set": "Masters Edition",
+        "power": "1",
+        "toughness": "1",
+        "oracle_text": "{T}: Target creature gets +1/+1 until end of turn.",
+        "mana_cost": "{1}{G}"
+    },
+    {
+        "name": "Pteramander",
+        "type": "Creature \u2014 Salamander Drake",
+        "set": "Outlaws of Thunder Junction Commander",
+        "power": "1",
+        "toughness": "1",
+        "oracle_text": "Flying\n{7}{U}: Adapt 4. This ability costs {1} less to activate for each instant and sorcery card in your graveyard. (If this creature has no +1/+1 counters on it, put four +1/+1 counters on it.)",
+        "mana_cost": "{U}"
+    },
+    {
+        "name": "Brightglass Gearhulk // Brightglass Gearhulk",
+        "type": "Card // Card",
+        "set": "Aetherdrift Art Series"
+    },
+    {
+        "name": "Nantuko Elder",
+        "type": "Creature \u2014 Insect Druid",
+        "set": "Odyssey",
+        "power": "1",
+        "toughness": "2",
+        "oracle_text": "{T}: Add {C}{G}.",
+        "mana_cost": "{2}{G}"
+    },
+    {
+        "name": "Vedalken Heretic",
+        "type": "Creature \u2014 Vedalken Rogue",
+        "set": "Alara Reborn",
+        "power": "1",
+        "toughness": "1",
+        "oracle_text": "Whenever this creature deals damage to an opponent, you may draw a card.",
+        "mana_cost": "{G}{U}"
+    }
+]
