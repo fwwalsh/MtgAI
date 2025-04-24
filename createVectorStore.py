@@ -6,7 +6,27 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from pprint import pprint
 
-def load_and_prepare_json_for_embeddings(json_file_path):
+def main():
+    
+    chroma = Chroma(
+        embedding_function=create_embeddings(), 
+        collection_name="cards_collection",
+        persist_directory="./data/chroma_db"
+    )
+    print("Loaded vector store")
+
+    data = load_docs("cardsFiltered.json")
+    print("Loaded data")
+
+    batch_size = 5000  # Adjust based on your system's memory
+    for i in range(0, len(data), batch_size):
+        batch = data[i:i + batch_size]
+        chroma.add_documents(batch)
+        print(f"Processed batch {i // batch_size + 1} of {len(data) // batch_size + 1}")
+
+    print("Saved vector store")
+
+def load_docs(json_file_path):
     """
     Loads JSON data from a file, extracts relevant text, and prepares it for embeddings.
 
@@ -18,41 +38,10 @@ def load_and_prepare_json_for_embeddings(json_file_path):
     """
     loader = JSONLoader(
         file_path=json_file_path,
-        jq_schema='.[].name', #act all values from each object
+        jq_schema='.[] | .document',
         text_content=False, # We will handle text content ourselves.
     )
-
-    documents = loader.load()
-
-    raw_texts = []
-    for doc in documents:
-        print(doc.page_content)
-        raw_texts.append(str(doc.page_content)) # page_content is a dictionary, so convert to string.
-
-    # Clean the raw text.
-    import re
-    cleaned_texts = []
-    for text in raw_texts:
-        text = re.sub(r"[^a-zA-Z0-9\s{}]", "", text)
-        text = re.sub(r"\s+", " ", text).strip()
-        cleaned_texts.append(text)
-
-    return cleaned_texts
-
-def load_cardsTxt():
-    loader = TextLoader("cardsFiltered.Short.txt")
-    documents = loader.load()
-    print("Loaded documents")
-    text_splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=0, separator="\n")
-    chunks = text_splitter.split_documents(documents)
-    return chunks
-
-def print_cardsJson():
-    with open("cardsFiltered.Short.json", "r") as f:
-        cards = json.load(f)
-        pprint(cards)
-    return cards
-#model = ChatVertexAI(model_name="gemini-2.0-flash-001", project="gen-lang-client-0391653967", key="AIzaSyAeToJ4AeUDvZHpa5ir705biWtbT_vbYVE")
+    return loader.load()
 
 
 def create_embeddings():
@@ -75,8 +64,6 @@ def create_vector_store(chunks, embeddings):
     )
     print("Saved vector store")
     return vectorStore
-data = load_and_prepare_json_for_embeddings("cardsFiltered.short.json")
 
-pprint(data, indent=4, width=100, depth=4, compact=True)
-
-print("Loaded cards")
+if __name__ == "__main__":
+    main()
