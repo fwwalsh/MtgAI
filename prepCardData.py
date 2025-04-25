@@ -2,7 +2,7 @@ import json
 import re
 
 def main():
-    file_path = 'data/carddata.json'
+    file_path = 'data/cardData.json'
     print(file_path)
     create_json_elements(file_path,"data/cardsFiltered.json")
     print("Done")
@@ -28,7 +28,7 @@ def create_metadata(element):
     return outputElement
 
 def create_json_elements(file_path, output_file):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r',  encoding="utf-8" ) as file:
         data = json.load(file)
         with open(output_file, 'w') as outfile:
             root = []

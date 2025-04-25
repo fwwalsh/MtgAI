@@ -4,7 +4,7 @@ import requests
 DOWNLOAD_CONFIG = [
     {
         "url": "https://api.scryfall.com/bulk-data/oracle-cards",
-        "output_filename": "carddata.json"
+        "output_filename": "cardData.json"
     },
     {
         "url": "https://media.wizards.com/2025/downloads/MagicCompRules%2020250404.txt",
@@ -30,8 +30,8 @@ def download_data(url, output_filename):
         card_data_response.raise_for_status()
 
         # Save to the specified output file
-        with open(output_filename, "wb") as file:
-            file.write(card_data_response.content)
+        with open(output_filename, "w", encoding="utf-8") as file:
+            file.write(card_data_response.text)
 
         print(f"Card data downloaded and saved to {output_filename}")
     else:
@@ -39,8 +39,8 @@ def download_data(url, output_filename):
         file_response = requests.get(url)
         file_response.raise_for_status()
 
-        with open(output_filename, "wb") as file:
-            file.write(file_response.content)
+        with open(output_filename, "w", encoding="utf-8") as file:
+            file.write(file_response.text)
 
         print(f"File downloaded and saved to {output_filename}")
 
