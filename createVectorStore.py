@@ -41,10 +41,37 @@ def load_docs(json_file_path):
     Returns:
         A list of cleaned text strings, suitable for embedding.
     """
+    def metadata_func(record: dict, metadata: dict) -> dict:
+        metadata_record = record.get("metadata")
+        if metadata_record.get("name"):
+            metadata["name"] = metadata_record.get("name")
+        if metadata_record.get("type"):
+            metadata["type"] = metadata_record.get("type")
+        if metadata_record.get("set_name"):
+            metadata["set_name"] = metadata_record.get("set_name")
+        if metadata_record.get("loyalty"):
+            metadata["loyalty"] = metadata_record.get("loyalty")
+        if metadata_record.get("power"):
+            metadata["power"] = metadata_record.get("power")
+        if metadata_record.get("toughness"):
+            metadata["toughness"] = metadata_record.get("toughness")
+        if metadata_record.get("oracle_text"):
+            metadata["oracle_text"] = metadata_record.get("oracle_text")
+        if metadata_record.get("mana_cost"):
+            metadata["mana_cost"] = metadata_record.get("mana_cost")
+        if metadata_record.get("power"):
+            metadata["power"] = metadata_record.get("power")
+        return metadata
+    # don't forget legalities
+    
+
+
     loader = JSONLoader(
         file_path=json_file_path,
-        jq_schema='.[] | .document',
+        jq_schema='.[]',
         text_content=False, # We will handle text content ourselves.
+        metadata_func=metadata_func, # Function to extract metadata from each record
+        content_key="document", # The key in the JSON that contains the text content.
     )
     return loader.load()
 #TODOL: code for google embeddings
