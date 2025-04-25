@@ -2,9 +2,9 @@ import json
 import re
 
 def main():
-    file_path = 'oracle-cards-20250424090227.json'
+    file_path = 'data/carddata.json'
     print(file_path)
-    create_json_elements(file_path,"cardsFiltered.json")
+    create_json_elements(file_path,"data/cardsFiltered.json")
     print("Done")
 
 def create_metadata(element):
@@ -28,7 +28,7 @@ def create_metadata(element):
     return outputElement
 
 def create_json_elements(file_path, output_file):
-    with open(file_path, 'r' , encoding="UTF-8") as file:
+    with open(file_path, 'r') as file:
         data = json.load(file)
         with open(output_file, 'w') as outfile:
             root = []

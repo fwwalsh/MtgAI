@@ -45,109 +45,10 @@ load_dotenv()
 if not os.getenv("GOOGLE_API_KEY"):
     raise ValueError("GOOGLE_API_KEY not found in environment variables or gcloud ADC.")
 
-# Define file paths and Chroma directories
-cards_file_path = 'cards.json'
-# --- IMPORTANT: Set the correct path to your Comprehensive Rules PDF ---
-rules_pdf_path = 'MagicCompRules.pdf'
-# ---------------------------------------------------------------------
-cards_chroma_dir = 'chroma_db_mtg_cards_pdf' # Use new dir names to avoid conflicts
-rules_chroma_dir = 'chroma_db_mtg_rules_pdf'
-
-# --- Clean up previous Chroma directories (for demo consistency) ---
-if os.path.exists(cards_chroma_dir):
-    print(f"Removing existing Chroma directory: {cards_chroma_dir}")
-    shutil.rmtree(cards_chroma_dir)
-if os.path.exists(rules_chroma_dir):
-    print(f"Removing existing Chroma directory: {rules_chroma_dir}")
-    shutil.rmtree(rules_chroma_dir)
-# --------------------------------------------------------------------
-
-# --- 1. Load Card Data (Same as before) ---
-if not os.path.exists(cards_file_path):
-     print(f"'{cards_file_path}' not found. Creating dummy file for example...")
-     # (Same dummy data creation as previous examples - omitted for brevity)
-     data = [
-        { "metadata": { "name": "Nissa, Worldsoul Speaker", "type": "Legendary Creature — Elf Druid", "set": "Aetherdrift Commander", "power": "3", "toughness": "3", "oracle_text": "Landfall — Whenever a land you control enters, you get {E}{E} (two energy counters).\nYou may pay eight {E} rather than pay the mana cost for permanent spells you cast.", "mana_cost": "{3}{G}" }, "document": "Card Name: nissa, worldsoul speaker\nMana Cost: three generic mana green mana\nType: legendary creature — elf druid\nRules Text:\nlandfall — whenever a land you control enters, you get {e}{e} (two energy counters).\nyou may pay eight {e} rather than pay the mana cost for permanent spells you cast.\nStats: power 3 toughness 3" },
-        { "metadata": { "name": "Static Orb", "type": "Artifact", "set": "Seventh Edition", "oracle_text": "As long as this artifact is untapped, players can't untap more than two permanents during their untap steps.", "mana_cost": "{3}" }, "document": "Card Name: static orb\nMana Cost: three generic mana\nType: artifact\nRules Text:\nas long as this artifact is untapped, players can't untap more than two permanents during their untap steps." },
-        { "metadata": { "name": "Llanowar Elves", "type": "Creature — Elf Druid", "set": "Dominaria United", "power": "1", "toughness": "1", "oracle_text": "{T}: Add {G}.", "mana_cost": "{G}"}, "document": "Card Name: llanowar elves\nMana Cost: green mana\nType: creature - elf druid\nRules Text:\ntap symbol: add green mana.\nStats: power 1 toughness 1"}
-    ]
-     with open(cards_file_path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
-jq_schema = '.[] | .document'
-card_loader = JSONLoader(
-    file_path=cards_file_path,
-    jq_schema=jq_schema,
-    text_content=False
-)
-try:
-    card_documents = card_loader.load()
-    print(f"Loaded {len(card_documents)} card documents.")
-    if not card_documents: raise ValueError("No card documents loaded.")
-    print("Sample card document metadata:", card_documents[0].metadata)
-except Exception as e:
-    print(f"Error loading card documents: {e}")
-    exit()
-
-# --- 2. Load and Split Rules Data from PDF ---
-print(f"\nLoading rules from PDF: {rules_pdf_path}")
-if not os.path.exists(rules_pdf_path):
-    print(f"ERROR: Rules PDF file not found at '{rules_pdf_path}'.")
-    print("Please download the Magic: The Gathering Comprehensive Rules PDF and place it there.")
-    exit()
-
-try:
-    pdf_loader = PyPDFLoader(rules_pdf_path)
-    raw_rule_documents = pdf_loader.load()
-    print(f"Loaded {len(raw_rule_documents)} pages from PDF.")
-
-    # Split the loaded pages into smaller chunks
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, # Adjust chunk size as needed
-        chunk_overlap=150 # Adjust overlap as needed
-    )
-    rule_documents = text_splitter.split_documents(raw_rule_documents)
-    print(f"Split PDF pages into {len(rule_documents)} rule chunks.")
-    if not rule_documents: raise ValueError("No rule documents created after splitting.")
-    # Metadata from PyPDFLoader typically includes 'source' (file path) and 'page' number
-    print("Sample rule chunk metadata:", rule_documents[0].metadata)
-    print("-" * 20)
-
-except Exception as e:
-    print(f"Error loading or splitting PDF: {e}")
-    exit()
-
-
 # --- 3. Initialize Gemini LLM & Embeddings (Same as before) ---
 print("Initializing Gemini models...")
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-print("Gemini models initialized.")
 
-# --- 4. Create Vector Stores (Using PDF-loaded rules) ---
-print("Creating Chroma vector stores...")
-try:
-    # Card Vector Store
-    cards_vectorstore = Chroma.from_documents(
-        documents=card_documents,
-        embedding=embeddings,
-        collection_name="mtg_cards_pdf", # Use new collection name
-        persist_directory=cards_chroma_dir
-    )
-    print(f"Card Chroma store created/loaded from {cards_chroma_dir}.")
 
-    # Rules Vector Store (using split documents from PDF)
-    rules_vectorstore = Chroma.from_documents(
-        documents=rule_documents, # Use the split documents
-        embedding=embeddings,
-        collection_name="mtg_rules_pdf", # Use new collection name
-        persist_directory=rules_chroma_dir
-    )
-    print(f"Rules Chroma store created/loaded from {rules_chroma_dir}.")
-
-except Exception as e:
-    print(f"Error creating Chroma stores: {e}")
-    exit()
 
 # --- 5. Define Metadata Schema & Create Retrievers (Same logic) ---
 
@@ -162,6 +63,13 @@ card_metadata_field_info = [
 ]
 card_document_content_description = "Text content describing a Magic: The Gathering card, including its abilities and stats."
 
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
+cards_vectorstore = Chroma(
+        embedding_function=GoogleGenerativeAIEmbeddings(model="models/embedding-001"), 
+        collection_name="cards_collection_google",
+        persist_directory="./data/chroma_db"
+    )
+
 card_retriever_base = SelfQueryRetriever.from_llm(
     llm,
     cards_vectorstore,
@@ -170,6 +78,13 @@ card_retriever_base = SelfQueryRetriever.from_llm(
     verbose=True
 )
 print("Card Self-query retriever created.")
+
+rules_vectorstore = Chroma(
+        embedding_function=GoogleGenerativeAIEmbeddings(model="models/embedding-001"), 
+        collection_name="mtg_comprehensive_rules",
+        persist_directory="./data/chroma_db"
+    )
+
 
 # Rules Retriever (Basic Vector Store Retriever for PDF chunks)
 # Metadata filtering on rules is less likely needed/useful here,
@@ -191,9 +106,13 @@ just reformulate it if needed and otherwise return it as is."""
 contextualize_q_prompt = ChatPromptTemplate.from_messages(
     [ ("system", contextualize_q_system_prompt), MessagesPlaceholder("chat_history"), ("human", "{input}"), ]
 )
-history_aware_retriever_chain = create_history_aware_retriever(
-    llm, RunnableParallel(cards=card_retriever, rules=rules_retriever), contextualize_q_prompt
-) | RunnableLambda(lambda x: x['input'])
+
+
+#history_aware_retriever_chain = create_history_aware_retriever(
+#        llm, RunnableParallel(cards=card_retriever, rules=rules_retriever), contextualize_q_prompt
+#    ) | RunnableLambda(lambda x: x['query'])
+
+
 
 # 6b. Combined Retrieval Function
 def get_combined_documents(query: str):
@@ -226,6 +145,7 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 # 6d. Full RAG Chain Assembly using LCEL
 def route_input_for_retrieval(inputs):
+    
     standalone_query = history_aware_retriever_chain.invoke(inputs)
     combined_docs = get_combined_documents(standalone_query)
     return { "context": combined_docs, "input": inputs["input"], "chat_history": inputs["chat_history"] }

@@ -1,21 +1,26 @@
+import os
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import JSONLoader
 import json
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from pprint import pprint
 
+if not os.getenv("GOOGLE_API_KEY"):
+    raise ValueError("GOOGLE_API_KEY not found in environment variables or gcloud ADC.")
+
 def main():
     
     chroma = Chroma(
-        embedding_function=create_embeddings(), 
-        collection_name="cards_collection",
+        embedding_function=create_google_embeddings(), 
+        collection_name="cards_collection_google",
         persist_directory="./data/chroma_db"
     )
     print("Loaded vector store")
 
-    data = load_docs("cardsFiltered.json")
+    data = load_docs("./data/cardsFiltered.json")
     print("Loaded data")
 
     batch_size = 5000  # Adjust based on your system's memory
@@ -42,9 +47,12 @@ def load_docs(json_file_path):
         text_content=False, # We will handle text content ourselves.
     )
     return loader.load()
+#TODOL: code for google embeddings
+def create_google_embeddings():
+    #llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0, convert_system_message_to_human=True)
+    return GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
-
-def create_embeddings():
+def create_huggingface_embeddings():
     model_name = "sentence-transformers/all-MiniLM-L6-v2"
     model_kwargs = {'device': 'cpu'}
     encode_kwargs = {'normalize_embeddings': False}
