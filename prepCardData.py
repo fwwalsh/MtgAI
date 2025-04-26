@@ -25,6 +25,10 @@ def create_metadata(element):
         outputElement["oracle_text"] = element["oracle_text"]
     if "mana_cost" in element:
         outputElement["mana_cost"] = element["mana_cost"]
+    if "cmc" in element:
+        outputElement["cmc"] = element["cmc"]
+    if "legalities" in element:
+        outputElement["legalities"] = element["legalities"]
     return outputElement
 
 def create_json_elements(file_path, output_file):

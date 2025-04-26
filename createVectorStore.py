@@ -7,6 +7,10 @@ from langchain_text_splitters import CharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from pprint import pprint
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 if not os.getenv("GOOGLE_API_KEY"):
     raise ValueError("GOOGLE_API_KEY not found in environment variables or gcloud ADC.")
@@ -49,18 +53,22 @@ def load_docs(json_file_path):
             metadata["type"] = metadata_record.get("type")
         if metadata_record.get("set_name"):
             metadata["set_name"] = metadata_record.get("set_name")
-        if metadata_record.get("loyalty"):
-            metadata["loyalty"] = metadata_record.get("loyalty")
-        if metadata_record.get("power"):
-            metadata["power"] = metadata_record.get("power")
-        if metadata_record.get("toughness"):
-            metadata["toughness"] = metadata_record.get("toughness")
+        if metadata_record.get("loyalty") and metadata_record.get("loyalty").isdigit():
+            metadata["loyalty"] = int(metadata_record.get("loyalty"))
+        if (metadata_record.get("power") and metadata_record.get("power").isdigit()):
+            metadata["power"] = int(metadata_record.get("power"))
+        if (metadata_record.get("toughness") and metadata_record.get("toughness").isdigit()):
+            metadata["toughness"] = int(metadata_record.get("toughness"))
         if metadata_record.get("oracle_text"):
             metadata["oracle_text"] = metadata_record.get("oracle_text")
         if metadata_record.get("mana_cost"):
             metadata["mana_cost"] = metadata_record.get("mana_cost")
-        if metadata_record.get("power"):
-            metadata["power"] = metadata_record.get("power")
+        if metadata_record.get("cmc") :
+            metadata["cmc"] = int(metadata_record.get("cmc"))
+        if metadata_record.get("legalities").get("commanders"):
+            metadata["isCommander"] = True
+        else:
+            metadata["isCommander"] = False    
         return metadata
     # don't forget legalities
     
